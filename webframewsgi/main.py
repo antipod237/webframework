@@ -1,18 +1,19 @@
 import re
-from typing import List
+from typing import List, Type
 from webframewsgi.urls import Url
 from webframewsgi.exceptions import NotFound
-from webframewsgi.view import View
+from webframewsgi.views import View
 
 
 class WebFrame:
 
     __slots__ = ('urls',)
 
-    def __init__(self, urls):
+    def __init__(self, urls: List[Url]):
         self.urls = urls
 
     def __call__(self, environ, start_response):
+        from pprint import pprint; pprint(environ)
         data = b"Hello, world\n"
         start_response('200 OK', [
             ('Content-Type', 'text/plain'),
@@ -26,7 +27,7 @@ class WebFrame:
             return url
 
         def _find_view(self, raw_url: str) -> Type(View):
-            url = self._prepare_url(raw_url))
+            url = self._prepare_url(raw_url)
             for path in self.urls:
                 m = re.match(path.url, url)
                 if m is not None:

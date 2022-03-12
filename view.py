@@ -1,4 +1,4 @@
-from webframewsgi.view import View
+from webframewsgi.views import View
 
 class Homepage(View):
 

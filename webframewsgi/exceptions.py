@@ -1,7 +1,7 @@
-class NotFound(Exceptions):
+class NotFound(Exception):
     code = 404
     text = 'Страница не найдена'
 
-class NotAllowed(Exceptions):
+class NotAllowed(Exception):
     code = 405
-    text = 'Неподдерживаемый http метод'
+    text = 'Неподдерживаемый http-метод'
