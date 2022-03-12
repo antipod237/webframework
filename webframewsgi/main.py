@@ -32,7 +32,3 @@ class WebFrame:
                 if m is not None:
                     return path.view
                 raise NotFound
-
-
-
-                
