@@ -7,6 +7,23 @@ from webframewsgi.views import View
 
 class WebFrame:
     
+    __slots__ = ('urls',)
+
+    def __init__(self, urls: List[Url]):
+        self.urls = urls
+
+    def __call__(self, environ, start_response):
+        view = self._get_view(environ)
+        request = self._get_request(environ)
+        raw_responce  self._get_responce(environ, view, request)
+        responce = raw_responce.encode('utf-8')
+        #responce = b"Hello, world\n"
+        start_response('200 OK', [
+            ('Content-Type', 'text/plain'),
+            ('content-Length', str(len(responce)))
+        ])
+        return iter([responce])
+
     def _prepare_url(self, url: str):
         if url[-1] == '/':
             return url[:-1]
@@ -19,23 +36,17 @@ class WebFrame:
             if m is not None:
                 return path.view
         raise NotFound
-    __slots__ = ('urls',)
 
-    def __init__(self, urls: List[Url]):
-        self.urls = urls
-
-    def __call__(self, environ, start_response):
-        #from pprint import pprint; pprint(environ)
+    def _get_view(self, environ, dict) -> View:
         raw_url = environ['PATH_INFO']
         view = self._find_view(raw_url)()
+        return view
+
+    def _get_request(self, environ: dict):
+        return Request(environ)
+
+    def _get_responce(self, environ: dict):
         method = environ['REQUEST_METHOD'].lower()
         if not hasattr(view, method):
             raise NotAllowed
-        raw_responce = getattr(view, method)(None)
-        responce = raw_responce.encode('utf-8')
-        #responce = b"Hello, world\n"
-        start_response('200 OK', [
-            ('Content-Type', 'text/plain'),
-            ('content-Length', str(len(responce)))
-        ])
-        return iter([responce])
+        return getattr(view, method)(request)
