@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from webframewsgi.views import View
+from webframewsgi.view import View
 from typing import Type
 
 @dataclass

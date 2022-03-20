@@ -1,4 +1,5 @@
-from webframewsgi.views import View
+from webframewsgi.view import View
+from webframewsgi.request import Request
 
 class Homepage(View):
 
@@ -8,12 +9,12 @@ class Homepage(View):
 class EpicMath(View):
 
     def get(self, request: Request, *args, **kwargs):
-    first = request.GET('first')
-    if not first or not first[0].isnumeric():
-        return f'first пустое либо не является числом'
+        first = request.GET.get('first')
+        if not first or not first[0].isnumeric():
+            return f'first пустое либо не является числом'
 
-    second = request.GET('second')
-    if not second or not second[0].isnumeric():
-        return f'second пустое либо не является числом'
-
-    return f'Сумма {first[0]} и {second[0]} = {int(first[0]) + int(second[0])}'
+        second = request.GET.get('second')
+        if not second or not second[0].isnumeric():
+            return f'second пустое либо не является числом'
+        
+        return f'Сумма {first[0]} и {second[0]} = {int(first[0]) + int(second[0])}'

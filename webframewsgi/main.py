@@ -2,7 +2,8 @@ import re
 from typing import List, Type
 from webframewsgi.urls import Url
 from webframewsgi.exceptions import NotFound
-from webframewsgi.views import View
+from webframewsgi.view import View
+from webframewsgi.request import Request
 
 
 class WebFrame:
@@ -12,14 +13,14 @@ class WebFrame:
     def __init__(self, urls: List[Url]):
         self.urls = urls
 
-    def __call__(self, environ, start_response):
+    def __call__(self, environ: dict, start_response):
         view = self._get_view(environ)
         request = self._get_request(environ)
-        raw_responce  self._get_responce(environ, view, request)
+        raw_responce = self._get_responce(environ, view, request)
         responce = raw_responce.encode('utf-8')
         #responce = b"Hello, world\n"
         start_response('200 OK', [
-            ('Content-Type', 'text/plain'),
+            ('Content-Type', 'text/plain; charset=utf-8'),
             ('content-Length', str(len(responce)))
         ])
         return iter([responce])
@@ -37,7 +38,7 @@ class WebFrame:
                 return path.view
         raise NotFound
 
-    def _get_view(self, environ, dict) -> View:
+    def _get_view(self, environ: dict) -> View:
         raw_url = environ['PATH_INFO']
         view = self._find_view(raw_url)()
         return view
@@ -45,7 +46,7 @@ class WebFrame:
     def _get_request(self, environ: dict):
         return Request(environ)
 
-    def _get_responce(self, environ: dict):
+    def _get_responce(self, environ: dict, view: View, request: Request):
         method = environ['REQUEST_METHOD'].lower()
         if not hasattr(view, method):
             raise NotAllowed
