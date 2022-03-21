@@ -1,4 +1,4 @@
 
 # pyc folders
-/__pycache__
-/webframewsgi/__pycache__
+/__pycache__/*pyc
+/webframewsgi/__pycache__/*pyc
