@@ -1,11 +1,14 @@
+from datetime import datetime
 from webframewsgi.view import View
 from webframewsgi.request import Request
 from webframewsgi.response import Response
+from webframewsgi.template_engine import build_template
 
 class Homepage(View):
 
     def get(self, request, *args, **kwargs):
-        return Response(body='hello world from view')
+        body = build_template(request, {'time': str(datetime.now()), 'lst': [1,2,3]}, 'home.html')
+        return Response(body=body)
 
 class EpicMath(View):
 
