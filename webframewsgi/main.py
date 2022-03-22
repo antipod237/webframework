@@ -4,6 +4,7 @@ from webframewsgi.urls import Url
 from webframewsgi.exceptions import NotFound
 from webframewsgi.view import View
 from webframewsgi.request import Request
+from webframewsgi.response import Response
 
 
 class WebFrame:
@@ -16,14 +17,9 @@ class WebFrame:
     def __call__(self, environ: dict, start_response):
         view = self._get_view(environ)
         request = self._get_request(environ)
-        raw_responce = self._get_responce(environ, view, request)
-        responce = raw_responce.encode('utf-8')
-        #responce = b"Hello, world\n"
-        start_response('200 OK', [
-            ('Content-Type', 'text/plain; charset=utf-8'),
-            ('content-Length', str(len(responce)))
-        ])
-        return iter([responce])
+        response = self._get_response(environ, view, request)
+        start_response(str(response.status_code), response.headers.items())
+        return iter([response.body])
 
     def _prepare_url(self, url: str):
         if url[-1] == '/':
@@ -46,7 +42,7 @@ class WebFrame:
     def _get_request(self, environ: dict):
         return Request(environ)
 
-    def _get_responce(self, environ: dict, view: View, request: Request):
+    def _get_response(self, environ: dict, view: View, request: Request) -> Response:
         method = environ['REQUEST_METHOD'].lower()
         if not hasattr(view, method):
             raise NotAllowed
