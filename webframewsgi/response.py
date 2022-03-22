@@ -4,7 +4,7 @@ class Response:
         self.status_code = status_code
         self.headers = {}
         self.body = b''
-        slef._set_base_headers(headers)
+        self._set_base_headers()
         if headers is not None:
             self.update_headers(headers)
         self._set_body(body)

@@ -5,7 +5,7 @@ from webframewsgi.response import Response
 class Homepage(View):
 
     def get(self, request, *args, **kwargs):
-        return 'hello world from view'
+        return Response(body='hello world from view')
 
 class EpicMath(View):
 
