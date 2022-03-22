@@ -15,11 +15,11 @@ class Engine:
         template_path = os.path.join(self.template_dir, template_name)
         if not os.path.isfile(template_path):
             raise Exception(f'{template_path} is not file')
-        with open(template_name) as f:
+        with open(template_path) as f:
             return f.read()
 
     def _build_block(self, context: dict, raw_template_block: str) ->str:
-        used_vars = VARAIBLE_PATTERN.findall(raw_template_block)
+        used_vars = VARIABLE_PATTERN.findall(raw_template_block)
         if used_vars is None:
             return raw_tamplate_block
         
@@ -36,22 +36,21 @@ class Engine:
         build_for_block = ''
         for i in context.get(for_block.group('seq'), []):
             build_for_block += self._build_block(
-                {**context, for_block.groupe('variable'): i},
+                {**context, for_block.group('variable'): i},
                 for_block.group('content')
             )
         return FOR_BLOCK_PATTERN.sub(build_for_block, raw_template)
         
     def build(self, context: dict, template_name: str) -> str:
         raw_template = self._get_template_as_string(template_name)
-        raw_template = self._build_for_block(context, raw_template)
-        return self._build_block(contest, raw_template)
+        raw_template = self._buid_for_block(context, raw_template)
+        return self._build_block(context, raw_template)
         
-    def build_template(request: Request, context: dict, template_name: str):
-        assert request.settings.get('BASE_DIR')
-        assert request.settings.get('TEMPLATE_DIR_NAME')
-        
-        engine = Engine(
-            request.settings.get('BASE_DIR'),
-            request.settings.get('TEMPLATE_DIR_NAME')
-        )
-        return engine.build(context, template_name)
+def build_template(request: Request, context: dict, template_name: str):
+    assert request.settings.get('BASE_DIR')
+    assert request.settings.get('TEMPLATE_DIR_NAME')
+    engine = Engine(
+        request.settings.get('BASE_DIR'),
+        request.settings.get('TEMPLATE_DIR_NAME')
+    )
+    return engine.build(context, template_name)

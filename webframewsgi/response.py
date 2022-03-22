@@ -11,7 +11,7 @@ class Response:
 
     def _set_base_headers(self):
         self.headers = {
-            'Content-Type': 'text/plain; charset=utf-8',
+            'Content-Type': 'text/html; charset=utf-8',
             'content-Length': 0
         }
 
