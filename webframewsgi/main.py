@@ -9,10 +9,11 @@ from webframewsgi.response import Response
 
 class WebFrame:
     
-    __slots__ = ('urls',)
+    __slots__ = ('urls', 'settings')
 
-    def __init__(self, urls: List[Url]):
+    def __init__(self, urls: List[Url], settings: dict):
         self.urls = urls
+        self.settings = settings
 
     def __call__(self, environ: dict, start_response):
         view = self._get_view(environ)
@@ -40,7 +41,7 @@ class WebFrame:
         return view
 
     def _get_request(self, environ: dict):
-        return Request(environ)
+        return Request(environ, self.settings)
 
     def _get_response(self, environ: dict, view: View, request: Request) -> Response:
         method = environ['REQUEST_METHOD'].lower()
