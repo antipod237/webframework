@@ -22,3 +22,15 @@ class EpicMath(View):
             return Response(body = f'second пустое либо не является числом')
         
         return Response(body = f'Сумма {first[0]} и {second[0]} = {int(first[0]) + int(second[0])}')
+
+class Hello(View):
+
+    def get(self, request, *args, **qwargs) -> Request:
+        body = build_template(request, {'name': "unknown"}, 'hello.html')
+        return Response(body=body)
+
+    def post(self, request, *args, **qwargs) -> Request:
+        raw_name = request.POST.get('answer')
+        name = raw_name[0] if raw_name else "unknown"
+        body = build_template(request, {'name': name}, 'hello.html')
+        return Response(body=body)
