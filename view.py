@@ -7,7 +7,9 @@ from webframewsgi.template_engine import build_template
 class Homepage(View):
 
     def get(self, request, *args, **kwargs):
-        body = build_template(request, {'time': str(datetime.now()), 'lst': [1,2,3]}, 'home.html')
+        body = build_template(request,
+        {'time': str(datetime.now()), 'lst': [1,2,3], 'session_id': request.session_id},
+         'home.html')
         return Response(request, body=body)
 
 class EpicMath(View):
