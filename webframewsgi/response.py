@@ -1,6 +1,8 @@
+from webframewsgi.request import Request
+
 class Response:
 
-    def __init__(self, status_code: int = 200, headers: dict = None, body: str = ''):
+    def __init__(self, request: Request, status_code: int = 200, headers: dict = None, body: str = ''):
         self.status_code = status_code
         self.headers = {}
         self.body = b''
@@ -8,6 +10,11 @@ class Response:
         if headers is not None:
             self.update_headers(headers)
         self._set_body(body)
+        self.request = request
+        self.extra = {}
+
+    def __getattr__(self, item):
+        return self.extra.get(item)
 
     def _set_base_headers(self):
         self.headers = {

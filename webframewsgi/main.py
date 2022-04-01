@@ -5,20 +5,24 @@ from webframewsgi.exceptions import NotFound
 from webframewsgi.view import View
 from webframewsgi.request import Request
 from webframewsgi.response import Response
+from webframewsgi.middleware import BaseMiddleware
 
 
 class WebFrame:
     
-    __slots__ = ('urls', 'settings')
+    __slots__ = ('urls', 'settings', 'middlewares')
 
-    def __init__(self, urls: List[Url], settings: dict):
+    def __init__(self, urls: List[Url], settings: dict, middlewares: List[Type[BaseMiddleware]]):
         self.urls = urls
         self.settings = settings
+        self.middlewares = middlewares
 
     def __call__(self, environ: dict, start_response):
         view = self._get_view(environ)
         request = self._get_request(environ)
+        self._apply_middleware_to_request(request)
         response = self._get_response(environ, view, request)
+        self._apply_middleware_to_response(response)
         start_response(str(response.status_code), response.headers.items())
         return iter([response.body])
 
@@ -48,3 +52,11 @@ class WebFrame:
         if not hasattr(view, method):
             raise NotAllowed
         return getattr(view, method)(request)
+
+    def _apply_middleware_to_request(self, request: Request):
+        for i in self.middlewares:
+            i().to_request(request)
+
+    def _apply_middleware_to_response(self, response: Response):
+        for i in self.middlewares:
+            i().to_response(response)
